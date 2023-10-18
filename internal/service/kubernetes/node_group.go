@@ -202,14 +202,14 @@ func resourceNodeGroupCreate(ctx context.Context, d *schema.ResourceData, meta i
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.SetId(marshalID(clusterID, ng.Name))
+	d.SetId(utils.MarshalID(clusterID, ng.Name))
 	return setNodeGroupResourceData(d, clusterID, ng)
 }
 
 func resourceNodeGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) (diags diag.Diagnostics) {
 	svc := meta.(*service.Service)
 	var clusterID, name string
-	if err := unmarshalID(d.Id(), &clusterID, &name); err != nil {
+	if err := utils.UnmarshalID(d.Id(), &clusterID, &name); err != nil {
 		return diag.FromErr(err)
 	}
 	ng, err := svc.GetKubernetesNodeGroup(ctx, &request.GetKubernetesNodeGroupRequest{
@@ -219,7 +219,7 @@ func resourceNodeGroupRead(ctx context.Context, d *schema.ResourceData, meta int
 	if err != nil {
 		return utils.HandleResourceError(d.Get("name").(string), d, err)
 	}
-	d.SetId(marshalID(clusterID, ng.Name))
+	d.SetId(utils.MarshalID(clusterID, ng.Name))
 	return setNodeGroupResourceData(d, clusterID, &ng.KubernetesNodeGroup)
 }
 
@@ -229,7 +229,7 @@ func resourceNodeGroupUpdate(ctx context.Context, d *schema.ResourceData, meta i
 	}
 	svc := meta.(*service.Service)
 	var clusterID, name string
-	if err := unmarshalID(d.Id(), &clusterID, &name); err != nil {
+	if err := utils.UnmarshalID(d.Id(), &clusterID, &name); err != nil {
 		return diag.FromErr(err)
 	}
 	ng, err := svc.ModifyKubernetesNodeGroup(ctx, &request.ModifyKubernetesNodeGroupRequest{
@@ -248,7 +248,7 @@ func resourceNodeGroupUpdate(ctx context.Context, d *schema.ResourceData, meta i
 func resourceNodeGroupDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) (diags diag.Diagnostics) {
 	svc := meta.(*service.Service)
 	var clusterID, name string
-	if err := unmarshalID(d.Id(), &clusterID, &name); err != nil {
+	if err := utils.UnmarshalID(d.Id(), &clusterID, &name); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.FromErr(svc.DeleteKubernetesNodeGroup(ctx, &request.DeleteKubernetesNodeGroupRequest{
